@@ -1,0 +1,20 @@
+# Compra Que Rende
+
+User-agent: *
+Allow: /
+
+# Paginas de administracao: nada a indexar, e nao convem aparecer
+# em busca. As duas ja trazem <meta name="robots" content="noindex">,
+# que impede a INDEXACAO; as linhas abaixo evitam ate a visita do
+# robo. Cada pagina aparece em duas formas porque o nginx serve as
+# duas: /admin e /admin.html apontam para o mesmo arquivo.
+Disallow: /admin
+Disallow: /admin.html
+Disallow: /login
+Disallow: /login.html
+
+# A API devolve JSON, nao pagina. Nada a indexar, e visita de robo
+# so gasta o servidor.
+Disallow: /api/
+
+Sitemap: https://compraquerende.com.br/sitemap.xml

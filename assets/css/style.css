@@ -1,0 +1,1396 @@
+/* =========================================================
+   COMPRA QUE RENDE — Design System
+   Tema escuro. Cores tiradas do logo: preto + verde + dourado.
+   Para adaptar, mexa só nas variáveis de :root.
+   ========================================================= */
+
+:root{
+  /* --- Base escura --- */
+  --bg:         #050806;
+  --bg-2:       #0A100C;
+  --surface:    #0F1712;
+  --surface-2:  #16211A;
+  --border:     rgba(255,255,255,.08);
+  --border-2:   rgba(255,255,255,.16);
+
+  /* --- Texto --- */
+  --text:       #F3F7F4;
+  --text-2:     #AFC0B6;
+  --muted:      #7C8F84;
+
+  /* --- Marca --- */
+  --green:      #19E05C;
+  --green-600:  #0FB847;
+  --green-soft: rgba(25,224,92,.12);
+  --gold:       #FFC531;
+  --gold-600:   #F0A400;
+  --gold-soft:  rgba(255,197,49,.12);
+  --danger:     #FF5C5C;
+
+  --grad-brand: linear-gradient(135deg, var(--green) 0%, #8BE000 45%, var(--gold) 100%);
+  --grad-gold:  linear-gradient(135deg, var(--gold) 0%, var(--gold-600) 100%);
+  --grad-green: linear-gradient(135deg, var(--green) 0%, var(--green-600) 100%);
+
+  /* --- Tipografia --- */
+  --font-head: 'Sora', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-body: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+
+  /* --- Formas --- */
+  --r-sm: 10px;
+  --r:    16px;
+  --r-lg: 24px;
+  --r-pill: 999px;
+
+  --shadow:    0 10px 40px -12px rgba(0,0,0,.8);
+  --shadow-lg: 0 30px 80px -24px rgba(0,0,0,.9);
+
+  --maxw: 1200px;
+  --gutter: 24px;
+}
+
+*,*::before,*::after{ box-sizing:border-box; }
+html{ scroll-behavior:smooth; }
+
+/* O atributo hidden vira display:none pela folha do NAVEGADOR, e
+   qualquer display escrito aqui ganha dele. Quem escreve
+   `.field-row{ display:grid }` nao imagina estar desligando o
+   hidden de um elemento com essa classe - e o JavaScript continua
+   marcando hidden=true achando que escondeu.
+
+   Ja tinha acontecido: os campos de Aulas e Horas do painel ficavam
+   na tela mesmo com e-book escolhido, porque #camposCurso e um
+   .field-row. O !important e o que devolve ao atributo o sentido
+   que ele anuncia. */
+[hidden]{ display:none !important; }
+
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  font-family:var(--font-body);
+  font-size:16px;
+  line-height:1.65;
+  -webkit-font-smoothing:antialiased;
+
+  /* overflow-x:hidden no body transforma o body num container de
+     rolagem, e isso QUEBRA position:sticky nos filhos — era o que
+     estava desalinhando a caixa de compra na página de produto.
+     overflow:clip corta igual, sem virar container de rolagem. */
+  overflow-x:hidden;                     /* navegador antigo */
+}
+@supports (overflow: clip){
+  /* Nos dois: o body sozinho nao basta, porque quem rola a pagina e o
+     elemento html — um filho que vaza continua alargando a barra de
+     rolagem horizontal. E clip, nao hidden, pelo motivo acima. */
+  html, body{ overflow-x:clip; }       /* navegador atual */
+}
+
+img{ max-width:100%; display:block; }
+a{ color:inherit; text-decoration:none; }
+button{ font-family:inherit; }
+
+h1,h2,h3,h4{
+  font-family:var(--font-head);
+  font-weight:700;
+  line-height:1.15;
+  letter-spacing:-.025em;
+  margin:0 0 .5em;
+}
+h1{ font-size:clamp(2.2rem, 6vw, 4rem); }
+h2{ font-size:clamp(1.8rem, 4.2vw, 2.85rem); }
+h3{ font-size:clamp(1.15rem, 2.2vw, 1.5rem); }
+p{ margin:0 0 1em; color:var(--text-2); }
+
+.container{
+  width:100%;
+  max-width:var(--maxw);
+  margin-inline:auto;
+  padding-inline:var(--gutter);
+}
+
+.section{ padding-block:clamp(64px, 9vw, 120px); }
+.section--tight{ padding-block:clamp(48px, 6vw, 80px); }
+.section--alt{ background:var(--bg-2); border-block:1px solid var(--border); }
+
+/* ---------- Utilitários ---------- */
+.grad-text{
+  background:var(--grad-brand);
+  -webkit-background-clip:text; background-clip:text;
+  color:transparent;
+}
+.gold-text{ color:var(--gold); }
+.green-text{ color:var(--green); }
+.muted{ color:var(--muted); }
+.center{ text-align:center; }
+.mx-auto{ margin-inline:auto; }
+.maxw-720{ max-width:720px; }
+.mb-0{ margin-bottom:0; }
+
+/* ---------- Eyebrow ---------- */
+.eyebrow{
+  display:inline-flex; align-items:center; gap:8px;
+  padding:6px 14px;
+  border:1px solid rgba(25,224,92,.3);
+  border-radius:var(--r-pill);
+  background:var(--green-soft);
+  color:#7BFFAB;
+  font-size:.76rem; font-weight:700;
+  letter-spacing:.08em; text-transform:uppercase;
+  margin-bottom:20px;
+}
+.eyebrow .dot{
+  width:6px; height:6px; border-radius:50%;
+  background:var(--green);
+  box-shadow:0 0 12px var(--green);
+}
+
+/* ---------- Botões ---------- */
+.btn{
+  display:inline-flex; align-items:center; justify-content:center; gap:10px;
+  padding:14px 26px;
+  border-radius:var(--r-pill);
+  border:1px solid transparent;
+  font-family:var(--font-head);
+  font-weight:700; font-size:.95rem;
+  cursor:pointer;
+  transition:transform .18s ease, box-shadow .18s ease, background .18s ease, border-color .18s ease;
+  white-space:nowrap;
+}
+.btn:hover{ transform:translateY(-2px); }
+.btn:active{ transform:translateY(0); }
+
+/* CTA de compra — dourado, como no logo */
+.btn--buy{
+  background:var(--grad-gold);
+  color:#1A1200;
+  box-shadow:0 8px 28px -8px rgba(255,197,49,.65);
+}
+.btn--buy:hover{ box-shadow:0 14px 40px -8px rgba(255,197,49,.85); }
+
+/* CTA secundário — verde */
+.btn--primary{
+  background:var(--grad-green);
+  color:#03210D;
+  box-shadow:0 8px 28px -8px rgba(25,224,92,.6);
+}
+.btn--primary:hover{ box-shadow:0 14px 40px -8px rgba(25,224,92,.8); }
+
+.btn--ghost{
+  background:rgba(255,255,255,.04);
+  border-color:var(--border-2);
+  color:var(--text);
+}
+.btn--ghost:hover{ background:rgba(255,255,255,.09); }
+
+.btn--outline-gold{
+  background:transparent; border-color:var(--gold); color:var(--gold);
+}
+.btn--outline-gold:hover{ background:var(--gold-soft); }
+
+.btn--sm{ padding:10px 18px; font-size:.85rem; }
+.btn--lg{ padding:17px 34px; font-size:1.02rem; }
+.btn--block{ width:100%; }
+
+/* ---------- Topbar ---------- */
+.topbar{
+  background:var(--grad-brand);
+  color:#04180A;
+  text-align:center;
+  font-size:.82rem; font-weight:800;
+  padding:9px 16px;
+}
+.topbar a{ text-decoration:underline; text-underline-offset:3px; }
+
+/* ---------- Header ---------- */
+.header{
+  position:sticky; top:0; z-index:60;
+  background:rgba(5,8,6,.7);
+  backdrop-filter:blur(16px);
+  -webkit-backdrop-filter:blur(16px);
+  border-bottom:1px solid transparent;
+  transition:border-color .25s ease, background .25s ease;
+}
+.header.is-stuck{ border-bottom-color:var(--border); background:rgba(5,8,6,.94); }
+.header__inner{ display:flex; align-items:center; gap:28px; height:74px; }
+
+.logo{ display:flex; align-items:center; gap:11px; }
+.logo__mark{
+  width:38px; height:38px; flex-shrink:0;
+  filter:drop-shadow(0 4px 12px rgba(25,224,92,.4));
+}
+/* Versão com o PNG real do cliente (trocado por initLogo) */
+/* O símbolo real é mais largo que alto (carrinho deitado),
+   então a caixa acompanha essa proporção em vez de ser quadrada. */
+.logo__mark--img{
+  width:50px; height:36px;
+  object-fit:contain; object-position:left center;
+  filter:drop-shadow(0 4px 14px rgba(25,224,92,.35));
+}
+.logo__txt{
+  font-family:var(--font-head);
+  font-weight:800; font-size:1.02rem;
+  line-height:1.05; letter-spacing:-.03em;
+  text-transform:uppercase;
+}
+.logo__txt b{ display:block; color:var(--gold); font-weight:800; }
+.logo__txt i{
+  display:block; font-style:normal;
+  font-size:.56rem; font-weight:600; letter-spacing:.14em;
+  color:var(--muted); margin-top:2px;
+}
+
+.nav{ display:flex; gap:26px; margin-left:auto; }
+.nav a{ font-size:.92rem; font-weight:500; color:var(--text-2); transition:color .18s ease; }
+.nav a:hover{ color:var(--green); }
+.header__actions{ display:flex; align-items:center; gap:12px; }
+
+.burger{
+  display:none;
+  width:42px; height:42px;
+  border-radius:var(--r-sm);
+  background:rgba(255,255,255,.05);
+  border:1px solid var(--border);
+  color:var(--text);
+  cursor:pointer; font-size:1.2rem;
+}
+
+.mobile-menu{
+  position:fixed; inset:74px 0 0 0; z-index:55;
+  background:var(--bg);
+  padding:28px var(--gutter);
+  display:none; flex-direction:column; gap:6px;
+  overflow-y:auto;
+}
+.mobile-menu.is-open{ display:flex; }
+.mobile-menu a{
+  padding:15px 0; border-bottom:1px solid var(--border);
+  font-family:var(--font-head); font-weight:600; font-size:1.1rem;
+}
+.mobile-menu .btn{ margin-top:18px; }
+
+/* ---------- Hero ---------- */
+.hero{ position:relative; padding-block:clamp(52px,8vw,100px); overflow:hidden; }
+.hero__glow{
+  position:absolute; pointer-events:none;
+  width:1000px; height:900px; border-radius:50%;
+  top:-460px; left:50%; transform:translateX(-50%);
+  background:radial-gradient(circle, rgba(25,224,92,.22) 0%, rgba(255,197,49,.08) 42%, transparent 66%);
+  filter:blur(24px);
+}
+.hero__grid{
+  display:grid; grid-template-columns:1.05fr .95fr;
+  gap:clamp(32px,5vw,72px); align-items:center;
+  position:relative; z-index:1;
+}
+.hero h1{ margin-bottom:22px; }
+.hero__sub{ font-size:clamp(1rem,1.6vw,1.15rem); color:var(--text-2); max-width:520px; margin-bottom:32px; }
+.hero__cta{ display:flex; flex-wrap:wrap; gap:14px; margin-bottom:34px; }
+
+.hero__proof{ display:flex; gap:34px; flex-wrap:wrap; padding-top:28px; border-top:1px solid var(--border); }
+.stat__num{ font-family:var(--font-head); font-weight:800; font-size:1.8rem; line-height:1; margin-bottom:6px; }
+.stat__label{ font-size:.79rem; color:var(--muted); }
+
+.hero__visual{ position:relative; }
+.hero-card{
+  background:linear-gradient(160deg, var(--surface-2), var(--surface));
+  border:1px solid var(--border-2);
+  border-radius:var(--r-lg);
+  padding:24px;
+  box-shadow:var(--shadow-lg);
+}
+.hero-card__thumb{
+  position:relative;
+  aspect-ratio:16/10; border-radius:var(--r);
+  display:grid; place-items:center;
+  margin-bottom:18px; overflow:hidden;
+  background:linear-gradient(140deg,#0B2415,#12180A);
+  background-size:cover; background-position:center;
+}
+
+/* Luz colorida girando devagar atrás do conteúdo */
+.hero-card__thumb::before{
+  content:""; position:absolute; inset:-45%;
+  background:conic-gradient(from 0deg,
+    transparent 0deg, var(--green) 55deg, transparent 130deg,
+    var(--gold) 200deg, transparent 280deg, var(--green) 340deg, transparent 360deg);
+  filter:blur(30px);
+  opacity:.6;
+  animation:thumbGira 16s linear infinite;
+}
+
+/* Duas manchas que passeiam em ritmo diferente, para o fundo
+   nunca repetir exatamente o mesmo quadro */
+.hero-card__thumb::after{
+  content:""; position:absolute; inset:0;
+  background:
+    radial-gradient(circle at 28% 26%, rgba(25,224,92,.42), transparent 52%),
+    radial-gradient(circle at 74% 78%, rgba(255,197,49,.38), transparent 52%);
+  animation:thumbFlutua 11s ease-in-out infinite alternate;
+}
+
+/* O conteúdo fica acima das duas camadas */
+.hero-card__thumb > *{ position:relative; z-index:2; }
+
+.hero-card__thumb span{
+  font-family:var(--font-head); font-weight:800;
+  font-size:2.2rem; text-align:center; padding:0 18px;
+  line-height:1.1; letter-spacing:-.03em;
+  text-shadow:0 2px 18px rgba(0,0,0,.55);
+}
+
+@keyframes thumbGira{ to{ transform:rotate(360deg); } }
+@keyframes thumbFlutua{
+  0%   { transform:translate(0,0) scale(1); }
+  50%  { transform:translate(6%,-5%) scale(1.12); }
+  100% { transform:translate(-5%,4%) scale(1.04); }
+}
+
+/* Se a capa real do produto estiver cadastrada, ela aparece e as
+   luzes ficam só como brilho por cima */
+.hero-card__thumb.tem-capa::before{ opacity:.28; }
+.hero-card__thumb.tem-capa::after{ opacity:.45; }
+
+@media (prefers-reduced-motion:reduce){
+  .hero-card__thumb::before,
+  .hero-card__thumb::after{ animation:none; }
+}
+.hero-card__row{ display:flex; align-items:center; justify-content:space-between; gap:12px; }
+.hero-card__price{ font-family:var(--font-head); font-weight:800; font-size:1.4rem; color:var(--gold); }
+
+.float-badge{
+  position:absolute;
+  display:flex; align-items:center; gap:10px;
+  background:rgba(15,23,18,.92);
+  backdrop-filter:blur(10px);
+  border:1px solid var(--border-2);
+  border-radius:var(--r);
+  padding:12px 16px;
+  box-shadow:var(--shadow);
+  font-size:.82rem; font-weight:700;
+}
+.float-badge--a{ top:-18px; right:-10px; }
+.float-badge--b{ bottom:-22px; left:-20px; }
+.float-badge i{ font-style:normal; font-size:1.1rem; }
+
+/* ---------- Frase de posicionamento no hero ---------- */
+.promessa{
+  margin:0; padding:18px 22px;
+  border-left:3px solid var(--gold);
+  background:var(--gold-soft);
+  border-radius:0 var(--r) var(--r) 0;
+  font-family:var(--font-head);
+  font-size:.98rem; font-weight:600; font-style:italic;
+  line-height:1.5; color:var(--text);
+  max-width:520px;
+}
+
+/* ---------- Grade de categorias (navegação marketplace) ---------- */
+.cat-grid{
+  display:grid; gap:16px;
+  grid-template-columns:repeat(auto-fit, minmax(160px,1fr));
+}
+.cat-card{
+  display:flex; flex-direction:column; align-items:center; gap:6px;
+  padding:26px 18px; text-align:center;
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--r-lg);
+  transition:transform .2s ease, border-color .2s ease, background .2s ease;
+}
+.cat-card:hover{
+  transform:translateY(-4px);
+  border-color:rgba(25,224,92,.4);
+  background:var(--surface-2);
+}
+.cat-card__ico{
+  font-size:1.9rem; line-height:1;
+  width:56px; height:56px; margin-bottom:6px;
+  display:grid; place-items:center;
+  border-radius:16px;
+  background:var(--green-soft);
+  border:1px solid rgba(25,224,92,.22);
+}
+.cat-card__nome{
+  font-family:var(--font-head); font-weight:700;
+  font-size:.95rem; line-height:1.25;
+}
+.cat-card__qtd{ font-size:.76rem; color:var(--muted); }
+
+/* ---------- Pilares (do logo) ---------- */
+.pillars{
+  display:grid; grid-template-columns:repeat(4,1fr);
+  gap:1px; background:var(--border);
+  border-block:1px solid var(--border);
+}
+.pillar{
+  background:var(--bg-2);
+  padding:26px 22px;
+  text-align:center;
+}
+.pillar__ico{
+  width:46px; height:46px; margin:0 auto 12px;
+  border-radius:12px;
+  display:grid; place-items:center;
+  background:var(--gold-soft);
+  border:1px solid rgba(255,197,49,.3);
+  font-size:1.25rem;
+}
+.pillar h4{ font-size:.92rem; margin:0 0 4px; text-transform:uppercase; letter-spacing:.04em; }
+.pillar p{ font-size:.78rem; margin:0; color:var(--muted); }
+
+/* ---------- Cabeçalho de seção ---------- */
+.sec-head{ max-width:660px; margin-bottom:48px; }
+.sec-head.center{ margin-inline:auto; }
+.sec-head p{ font-size:1.05rem; margin-bottom:0; }
+
+/* ---------- Filtros ---------- */
+.catalog-bar{
+  display:flex; flex-wrap:wrap; gap:14px;
+  align-items:center; justify-content:space-between;
+  margin-bottom:32px;
+}
+.chips{ display:flex; flex-wrap:wrap; gap:9px; }
+.chip{
+  padding:9px 18px; border-radius:var(--r-pill);
+  border:1px solid var(--border);
+  background:rgba(255,255,255,.03);
+  color:var(--text-2);
+  font-size:.85rem; font-weight:600;
+  cursor:pointer; transition:all .18s ease;
+}
+.chip:hover{ border-color:var(--border-2); color:var(--text); }
+.chip.is-active{ background:var(--green); border-color:var(--green); color:#03210D; }
+
+.search{ position:relative; flex:1 1 240px; max-width:310px; }
+.search input{
+  width:100%; padding:12px 16px 12px 42px;
+  border-radius:var(--r-pill);
+  border:1px solid var(--border);
+  background:var(--surface); color:var(--text);
+  font-family:inherit; font-size:.9rem; outline:none;
+  transition:border-color .18s ease;
+}
+.search input:focus{ border-color:var(--green); }
+.search input::placeholder{ color:var(--muted); }
+.search__icon{ position:absolute; left:15px; top:50%; transform:translateY(-50%); color:var(--muted); pointer-events:none; }
+
+/* ---------- Barra de filtros da página Produtos ---------- */
+.filtros{
+  display:grid; gap:16px;
+  padding:22px;
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--r-lg);
+  margin-bottom:18px;
+}
+.filtros .search{ max-width:none; flex:none; }
+.filtros__linha{ display:flex; flex-wrap:wrap; gap:12px; align-items:center; }
+.filtros__linha--fim{
+  justify-content:space-between;
+  padding-top:16px; border-top:1px solid var(--border);
+}
+.chip--sm{ padding:7px 14px; font-size:.8rem; }
+
+.ordenar{ display:flex; align-items:center; gap:10px; flex-shrink:0; }
+.ordenar span{ font-size:.82rem; white-space:nowrap; }
+.ordenar select{
+  padding:9px 14px; border-radius:var(--r-pill);
+  border:1px solid var(--border);
+  background:var(--surface-2); color:var(--text);
+  font-family:inherit; font-size:.85rem; font-weight:600;
+  cursor:pointer; outline:none;
+}
+.ordenar select:focus{ border-color:var(--green); }
+
+.resultado-bar{
+  display:flex; align-items:center; justify-content:space-between;
+  gap:12px; flex-wrap:wrap;
+  font-size:.88rem; margin-bottom:8px;
+}
+
+/* ---------- Cards de produto ---------- */
+.grid{ display:grid; grid-template-columns:repeat(auto-fill, minmax(290px,1fr)); gap:24px; }
+
+.card{
+  display:flex; flex-direction:column;
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--r-lg);
+  overflow:hidden;
+  transition:transform .22s ease, border-color .22s ease, box-shadow .22s ease;
+}
+.card:hover{ transform:translateY(-5px); border-color:rgba(25,224,92,.35); box-shadow:var(--shadow-lg); }
+.card__media{ aspect-ratio:16/10; position:relative; display:grid; place-items:center; overflow:hidden; }
+.card__media span{
+  font-family:var(--font-head); font-weight:800;
+  font-size:1.9rem; color:rgba(255,255,255,.95);
+  text-align:center; padding:0 18px; line-height:1.1; letter-spacing:-.03em;
+}
+.card__badge{
+  position:absolute; top:12px; left:12px;
+  padding:5px 12px; border-radius:var(--r-pill);
+  background:rgba(5,8,6,.8); backdrop-filter:blur(8px);
+  border:1px solid var(--border-2);
+  font-size:.68rem; font-weight:800;
+  letter-spacing:.07em; text-transform:uppercase;
+}
+.card__badge--hot{ background:var(--gold); border-color:transparent; color:#1A1200; }
+.card__badge--new{ background:var(--green); border-color:transparent; color:#03210D; }
+
+/* Tipo do produto (Curso / E-book / Guia) — canto direito da capa */
+.card__tipo{
+  position:absolute; top:12px; right:12px; z-index:2;
+  padding:5px 11px; border-radius:var(--r-pill);
+  background:rgba(5,8,6,.82); backdrop-filter:blur(8px);
+  border:1px solid var(--border-2);
+  font-size:.68rem !important; font-weight:700 !important;
+  letter-spacing:.03em;
+  font-family:var(--font-body) !important;
+  color:var(--text) !important;
+  padding-inline:11px !important;
+}
+
+.card__body{ padding:22px; display:flex; flex-direction:column; flex:1; }
+.card__cat{ font-size:.7rem; font-weight:800; letter-spacing:.1em; text-transform:uppercase; color:var(--green); margin-bottom:10px; }
+
+/* min-height de 2 linhas: com títulos de tamanhos diferentes, sem
+   isso a descrição de cada card começa numa altura e a grade fica
+   desencontrada. */
+.card__title{
+  font-family:var(--font-head); font-weight:700;
+  font-size:1.1rem; line-height:1.3;
+  margin:0 0 10px;
+  min-height:2.6em;
+}
+
+/* Corta em 3 linhas para os cards ficarem parelhos.
+   O texto completo continua na página do produto. */
+.card__desc{
+  font-size:.88rem; line-height:1.55; color:var(--muted);
+  margin-bottom:18px; flex:1;
+  display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical;
+  overflow:hidden;
+}
+
+.card__meta{
+  display:flex; gap:7px 14px; flex-wrap:wrap; align-items:center;
+  font-size:.78rem; color:var(--muted);
+  padding-bottom:16px; margin-bottom:16px;
+  border-bottom:1px solid var(--border);
+  min-height:2.9em;
+}
+
+/* flex-end: o preço pode ter 1, 2 ou 3 linhas (de / por / desconto).
+   Alinhando pela base, o botão fica sempre na mesma altura. */
+.card__foot{ display:flex; align-items:flex-end; justify-content:space-between; gap:12px; }
+.price{ display:flex; flex-direction:column; gap:1px; min-width:0; }
+.price__old{ font-size:.78rem; color:var(--muted); text-decoration:line-through; line-height:1.3; }
+.price__now{ font-family:var(--font-head); font-weight:800; font-size:1.35rem; color:var(--gold); line-height:1.2; }
+.price__now small{ font-size:.7rem; font-weight:600; color:var(--muted); }
+.price small{ font-size:.72rem; font-weight:600; line-height:1.3; }
+.card__foot .btn{ flex-shrink:0; }
+
+.empty{
+  grid-column:1/-1; text-align:center; padding:64px 20px;
+  color:var(--muted);
+  border:1px dashed var(--border-2); border-radius:var(--r-lg);
+}
+
+/* ---------- Passos ---------- */
+.steps{ display:grid; grid-template-columns:repeat(auto-fit, minmax(260px,1fr)); gap:24px; }
+.step{ background:var(--surface); border:1px solid var(--border); border-radius:var(--r-lg); padding:30px 26px; }
+.step__n{
+  width:46px; height:46px; border-radius:13px;
+  background:var(--green-soft); border:1px solid rgba(25,224,92,.32);
+  display:grid; place-items:center;
+  font-family:var(--font-head); font-weight:800; color:var(--green);
+  margin-bottom:18px;
+}
+.step h3{ font-size:1.1rem; margin-bottom:8px; }
+.step p{ font-size:.92rem; margin-bottom:0; }
+
+/* ---------- Depoimentos ---------- */
+.testimonials{ display:grid; grid-template-columns:repeat(auto-fit, minmax(300px,1fr)); gap:24px; }
+.quote{
+  background:linear-gradient(165deg, var(--surface-2), var(--surface));
+  border:1px solid var(--border);
+  border-radius:var(--r-lg);
+  padding:28px; display:flex; flex-direction:column;
+}
+.stars{ color:var(--gold); font-size:.95rem; letter-spacing:2px; margin-bottom:14px; }
+.quote p{ font-size:.96rem; color:var(--text); flex:1; }
+.quote__who{ display:flex; align-items:center; gap:12px; margin-top:18px; }
+.avatar{
+  width:42px; height:42px; border-radius:50%;
+  display:grid; place-items:center;
+  font-family:var(--font-head); font-weight:800; font-size:.9rem;
+  color:#03210D; flex-shrink:0;
+}
+.quote__name{ font-weight:600; font-size:.9rem; }
+.quote__role{ font-size:.78rem; color:var(--muted); }
+
+/* ---------- Autoridade ---------- */
+.about{ display:grid; grid-template-columns:.85fr 1.15fr; gap:clamp(28px,5vw,64px); align-items:center; }
+.about__photo{
+  aspect-ratio:4/5; border-radius:var(--r-lg);
+  background:
+    radial-gradient(circle at 30% 25%, rgba(25,224,92,.4), transparent 58%),
+    radial-gradient(circle at 75% 80%, rgba(255,197,49,.3), transparent 55%),
+    linear-gradient(160deg,#0C2013,#141A0B);
+  border:1px solid var(--border-2);
+  display:grid; place-items:center;
+  font-family:var(--font-head); font-weight:800; font-size:4rem;
+  color:rgba(255,255,255,.14);
+  overflow:hidden;
+}
+/* Quando o logo real do cliente está disponível, ele entra aqui */
+.about__photo.has-logo{
+  aspect-ratio:1/1;
+  padding:34px;
+  font-size:0;
+}
+.about__photo.has-logo img{
+  width:100%; height:100%;
+  object-fit:contain;
+  filter:drop-shadow(0 12px 32px rgba(0,0,0,.6));
+}
+.about ul{ list-style:none; padding:0; margin:22px 0 28px; display:grid; gap:13px; }
+.about li{
+  display:grid; grid-template-columns:20px 1fr; gap:12px;
+  align-items:start;
+  font-size:.96rem; line-height:1.55; color:var(--text-2);
+}
+.about li i{ color:var(--green); font-style:normal; line-height:1.55; text-align:center; }
+
+/* ---------- FAQ ---------- */
+.faq{ max-width:780px; margin-inline:auto; display:grid; gap:12px; }
+.faq__item{ background:var(--surface); border:1px solid var(--border); border-radius:var(--r); overflow:hidden; transition:border-color .2s ease; }
+.faq__item.is-open{ border-color:rgba(25,224,92,.35); }
+.faq__q{
+  width:100%; text-align:left; padding:20px 24px;
+  background:none; border:none; color:var(--text);
+  font-family:var(--font-head); font-weight:600; font-size:1rem;
+  cursor:pointer; display:flex; align-items:center; justify-content:space-between; gap:16px;
+}
+.faq__q i{ font-style:normal; color:var(--green); font-size:1.35rem; transition:transform .25s ease; flex-shrink:0; }
+.faq__item.is-open .faq__q i{ transform:rotate(45deg); }
+.faq__a{ max-height:0; overflow:hidden; transition:max-height .3s ease; }
+.faq__a p{ padding:0 24px 20px; margin:0; font-size:.94rem; }
+
+/* ---------- CTA final ---------- */
+.cta-final{
+  background:
+    radial-gradient(circle at 50% 0%, rgba(25,224,92,.18), transparent 60%),
+    radial-gradient(circle at 50% 100%, rgba(255,197,49,.1), transparent 55%),
+    var(--bg-2);
+  border-block:1px solid var(--border);
+  text-align:center;
+}
+
+/* ---------- Footer ---------- */
+.footer{ background:var(--bg-2); padding-block:56px 32px; }
+.footer__grid{ display:grid; grid-template-columns:1.4fr repeat(3,1fr); gap:36px; margin-bottom:40px; }
+.footer h4{ font-size:.76rem; letter-spacing:.11em; text-transform:uppercase; color:var(--muted); margin-bottom:16px; }
+.footer ul{ list-style:none; padding:0; margin:0; display:grid; gap:10px; }
+.footer a{ font-size:.9rem; color:var(--text-2); transition:color .18s ease; }
+.footer a:hover{ color:var(--green); }
+.footer__bottom{
+  border-top:1px solid var(--border); padding-top:24px;
+  display:flex; flex-wrap:wrap; gap:12px;
+  align-items:center; justify-content:space-between;
+  font-size:.82rem; color:var(--muted);
+}
+.footer__disclaimer{ font-size:.77rem; color:var(--muted); max-width:760px; margin-top:14px; line-height:1.6; }
+
+/* =========================================================
+   PÁGINA DE PRODUTO
+   ========================================================= */
+.breadcrumb{ font-size:.84rem; color:var(--muted); padding-block:24px 8px; }
+.breadcrumb a:hover{ color:var(--green); }
+
+.pdp{ display:grid; grid-template-columns:1.15fr .85fr; gap:clamp(28px,4vw,56px); align-items:start; padding-block:32px 72px; }
+.pdp__media{
+  aspect-ratio:16/10; border-radius:var(--r-lg);
+  display:grid; place-items:center;
+  border:1px solid var(--border-2);
+  margin-bottom:28px; overflow:hidden;
+}
+.pdp__media span{ font-family:var(--font-head); font-weight:800; font-size:clamp(1.6rem,4vw,2.8rem); text-align:center; padding:0 24px; letter-spacing:-.03em; }
+.pdp h1{ font-size:clamp(1.9rem,4vw,2.8rem); margin-bottom:16px; }
+.pdp__lead{ font-size:1.05rem; }
+
+/* .glow-border (effects.css) declara position:relative e, como aquele
+   arquivo carrega DEPOIS, vencia o sticky daqui por ordem — mesma
+   especificidade. Aí o top:90px deixava de ser âncora de rolagem e
+   virava deslocamento fixo para baixo, desalinhando a caixa da foto.
+   A regra .pdp__box.glow-border logo abaixo resolve por especificidade. */
+.pdp__box{
+  /* 74px do cabeçalho fixo + 16px de respiro */
+  position:sticky; top:90px;
+  align-self:start;
+  background:linear-gradient(165deg, var(--surface-2), var(--surface));
+  border:1px solid var(--border-2);
+  border-radius:var(--r-lg);
+  padding:28px; box-shadow:var(--shadow-lg);
+}
+/* Dois nomes de classe = especificidade maior que .glow-border sozinho */
+.pdp__box.glow-border{ position:sticky; }
+.pdp__price{ display:flex; align-items:baseline; gap:10px; flex-wrap:wrap; margin-bottom:6px; }
+.pdp__price .now{ font-family:var(--font-head); font-weight:800; font-size:2.3rem; color:var(--gold); line-height:1; }
+.pdp__price .old{ color:var(--muted); text-decoration:line-through; font-size:1rem; }
+.pdp__installment{ font-size:.88rem; color:var(--muted); margin-bottom:22px; }
+
+/* Lista de benefícios — o ✓ ocupa largura fixa para o texto
+   das várias linhas começar todo na mesma coluna. */
+.pdp__box ul{
+  list-style:none; padding:0;
+  margin:24px 0 0;
+  display:grid; gap:12px;
+  border-top:1px solid var(--border);
+  padding-top:22px;
+}
+.pdp__box li{
+  display:grid; grid-template-columns:18px 1fr; gap:10px;
+  align-items:start;
+  font-size:.88rem; line-height:1.5; color:var(--text-2);
+}
+.pdp__box li i{
+  font-style:normal; color:var(--green);
+  line-height:1.5; text-align:center;
+}
+.pdp__secure{ margin-top:20px; padding-top:18px; border-top:1px solid var(--border); font-size:.77rem; line-height:1.6; color:var(--muted); text-align:center; }
+
+.modules{ display:grid; gap:12px; margin-top:28px; }
+.module{
+  background:var(--surface); border:1px solid var(--border);
+  border-radius:var(--r); padding:20px 22px;
+  display:grid; grid-template-columns:36px 1fr; gap:16px;
+  align-items:start;
+  transition:border-color .2s ease;
+}
+.module:hover{ border-color:rgba(255,197,49,.3); }
+.module__n{
+  font-family:var(--font-head); font-weight:800;
+  color:var(--gold); font-size:.95rem;
+  line-height:1.35;   /* casa com a linha de base do título ao lado */
+}
+.module h4{ font-size:1rem; line-height:1.35; margin:0 0 5px; font-family:var(--font-head); }
+.module p{ font-size:.88rem; line-height:1.55; margin:0; }
+
+.checklist{ list-style:none; padding:0; margin:24px 0 0; display:grid; gap:14px; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); }
+.checklist li{
+  display:grid; grid-template-columns:20px 1fr; gap:12px;
+  align-items:start;
+  font-size:.95rem; line-height:1.55; color:var(--text-2);
+}
+.checklist li i{ font-style:normal; color:var(--green); line-height:1.55; text-align:center; }
+
+.guarantee{
+  display:flex; gap:22px; align-items:center;
+  background:var(--green-soft);
+  border:1px solid rgba(25,224,92,.3);
+  border-radius:var(--r-lg);
+  padding:28px; margin-top:40px;
+}
+.guarantee__seal{
+  width:84px; height:84px; border-radius:50%;
+  background:var(--grad-green); color:#03210D;
+  display:grid; place-items:center;
+  font-family:var(--font-head); font-weight:800;
+  font-size:.74rem; text-align:center; line-height:1.15;
+  flex-shrink:0;
+}
+.guarantee h3{ margin-bottom:6px; font-size:1.15rem; }
+.guarantee p{ margin:0; font-size:.92rem; }
+
+/* Caixa "tire sua dúvida no WhatsApp" na página de produto */
+.ajuda-box{
+  display:flex; flex-wrap:wrap; gap:20px;
+  align-items:center; justify-content:space-between;
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--r-lg);
+  padding:26px; margin-top:22px;
+}
+.ajuda-box h3{ font-size:1.05rem; }
+.ajuda-box p{ font-size:.9rem; }
+
+.buybar{
+  position:fixed; bottom:0; left:0; right:0; z-index:70;
+  display:none; align-items:center; justify-content:space-between; gap:14px;
+  padding:12px 16px calc(12px + env(safe-area-inset-bottom));
+  background:rgba(10,16,12,.97);
+  backdrop-filter:blur(14px);
+  border-top:1px solid var(--border-2);
+}
+.buybar .price__now{ font-size:1.15rem; }
+
+/* =========================================================
+   BOTÃO FLUTUANTE DE WHATSAPP
+   Único canal de atendimento do site — o cliente pediu
+   para não ter e-mail de contato.
+   ========================================================= */
+.wpp-float{
+  position:fixed; right:22px; bottom:22px; z-index:90;
+  display:flex; align-items:center; gap:0;
+  height:58px; padding:0 15px;
+  border-radius:var(--r-pill);
+  background:linear-gradient(135deg,#25D366,#12A150);
+  color:#04240F;
+  box-shadow:0 10px 30px -8px rgba(37,211,102,.6);
+  overflow:hidden;
+  transition:gap .3s cubic-bezier(.2,.8,.3,1),
+             padding .3s cubic-bezier(.2,.8,.3,1),
+             box-shadow .3s ease, transform .2s ease;
+}
+.wpp-float svg{ width:30px; height:30px; fill:currentColor; flex-shrink:0; }
+.wpp-float__txt{
+  font-family:var(--font-head); font-weight:700; font-size:.9rem;
+  white-space:nowrap; max-width:0; opacity:0;
+  transition:max-width .3s cubic-bezier(.2,.8,.3,1), opacity .25s ease;
+}
+.wpp-float:hover{ gap:10px; padding-right:22px; transform:translateY(-3px); box-shadow:0 16px 40px -8px rgba(37,211,102,.8); }
+.wpp-float:hover .wpp-float__txt{ max-width:180px; opacity:1; }
+
+/* Pulso discreto para chamar atenção sem incomodar */
+.wpp-float::before{
+  content:""; position:absolute; inset:0;
+  border-radius:inherit; border:2px solid rgba(37,211,102,.6);
+  animation:wppPing 2.6s cubic-bezier(0,0,.2,1) infinite;
+}
+@keyframes wppPing{
+  0%       { transform:scale(1);   opacity:.7; }
+  70%,100% { transform:scale(1.35); opacity:0; }
+}
+
+/* Cartão de contato reaproveitado em contato.html e no rodapé */
+.contato-card{
+  display:flex; gap:16px; align-items:flex-start;
+  background:var(--surface); border:1px solid var(--border);
+  border-radius:var(--r-lg); padding:24px;
+  transition:border-color .2s ease, transform .2s ease;
+}
+.contato-card:hover{ border-color:rgba(25,224,92,.35); transform:translateY(-3px); }
+.contato-card__ico{
+  width:46px; height:46px; border-radius:13px; flex-shrink:0;
+  display:grid; place-items:center; font-size:1.25rem;
+  background:var(--green-soft); border:1px solid rgba(25,224,92,.3);
+}
+.contato-card h3{ font-size:1rem; margin:0 0 4px; }
+.contato-card p{ font-size:.9rem; margin:0; }
+.contato-card b{ color:var(--text); }
+
+.contato-grid{
+  display:grid; gap:20px;
+  grid-template-columns:repeat(auto-fit, minmax(280px,1fr));
+}
+
+/* Atalhos de assunto — abrem o WhatsApp com mensagem pronta */
+.assuntos{
+  display:grid; gap:12px;
+  grid-template-columns:repeat(auto-fit, minmax(300px,1fr));
+  max-width:900px; margin-inline:auto;
+}
+.assunto{
+  display:flex; align-items:center; gap:14px;
+  padding:18px 20px;
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--r);
+  font-size:.94rem; font-weight:500;
+  transition:border-color .2s ease, transform .2s ease, background .2s ease;
+}
+.assunto:hover{
+  border-color:rgba(25,224,92,.4);
+  background:var(--surface-2);
+  transform:translateX(4px);
+}
+.assunto__ico{ font-size:1.25rem; flex-shrink:0; }
+.assunto__seta{
+  margin-left:auto; color:var(--green);
+  font-weight:700; opacity:0;
+  transition:opacity .2s ease, transform .2s ease;
+}
+.assunto:hover .assunto__seta{ opacity:1; transform:translateX(3px); }
+
+/* Bloco de endereço */
+.endereco-box{
+  display:grid; grid-template-columns:1.2fr .8fr;
+  gap:36px; align-items:center;
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--r-lg);
+  padding:36px;
+}
+.endereco-box__mapa{
+  aspect-ratio:4/3; border-radius:var(--r);
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  gap:6px; text-align:center;
+  background:
+    radial-gradient(circle at 40% 35%, rgba(25,224,92,.3), transparent 60%),
+    linear-gradient(150deg,#0B1A10,#141A0B);
+  border:1px solid var(--border-2);
+}
+.endereco-box__mapa span{ font-size:2.4rem; }
+.endereco-box__mapa b{ font-family:var(--font-head); font-size:1.05rem; }
+.endereco-box__mapa small{ color:var(--muted); font-size:.8rem; }
+
+/* =========================================================
+   LOGIN DO ADMINISTRADOR
+   ========================================================= */
+.auth-wrap{ min-height:100vh; display:grid; grid-template-columns:1fr 1fr; }
+.auth-side{
+  background:
+    radial-gradient(circle at 28% 18%, rgba(25,224,92,.26), transparent 58%),
+    radial-gradient(circle at 78% 86%, rgba(255,197,49,.18), transparent 55%),
+    var(--bg-2);
+  padding:52px 46px;
+  display:flex; flex-direction:column; justify-content:space-between;
+  border-right:1px solid var(--border);
+}
+.auth-side h2{ font-size:2rem; max-width:400px; }
+.auth-side ul{ list-style:none; padding:0; margin:26px 0 0; display:grid; gap:14px; }
+.auth-side li{
+  display:grid; grid-template-columns:20px 1fr; gap:12px;
+  align-items:start;
+  font-size:.95rem; line-height:1.55; color:var(--text-2);
+}
+.auth-side li i{ font-style:normal; color:var(--green); line-height:1.55; text-align:center; }
+
+.auth-main{ display:grid; place-items:center; padding:48px var(--gutter); }
+.auth-card{ width:100%; max-width:420px; }
+.tabs{
+  display:flex; gap:4px; padding:4px;
+  background:var(--surface); border:1px solid var(--border);
+  border-radius:var(--r-pill); margin-bottom:28px;
+}
+.tab{
+  flex:1; padding:11px; border:none; border-radius:var(--r-pill);
+  background:none; color:var(--text-2);
+  font-family:var(--font-head); font-weight:700; font-size:.9rem;
+  cursor:pointer; transition:all .18s ease;
+}
+.tab.is-active{ background:var(--green); color:#03210D; }
+
+.field{ margin-bottom:18px; }
+.field label{ display:block; font-size:.82rem; font-weight:600; color:var(--text-2); margin-bottom:7px; }
+.field input, .field select, .field textarea{
+  width:100%; padding:13px 16px;
+  border-radius:var(--r-sm);
+  border:1px solid var(--border);
+  background:var(--surface); color:var(--text);
+  font-family:inherit; font-size:.93rem; outline:none;
+  transition:border-color .18s ease, box-shadow .18s ease;
+}
+.field textarea{ resize:vertical; min-height:92px; line-height:1.6; }
+.field input:focus, .field select:focus, .field textarea:focus{
+  border-color:var(--green);
+  box-shadow:0 0 0 3px var(--green-soft);
+}
+.field small{ display:block; margin-top:6px; font-size:.76rem; color:var(--muted); }
+.field-row{ display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+
+/* Campo que aparece quando a lista suspensa escolhe "criar nova".
+   O nome ocupa o espaco todo e o emoji fica numa coluna estreita,
+   que e quanto ele precisa. */
+.novo-item{ display:grid; grid-template-columns:1fr 76px; gap:8px; margin-top:8px; }
+.novo-item input{ margin:0; }
+.novo-item input:last-child{ text-align:center; }
+
+.alert{ padding:12px 16px; border-radius:var(--r-sm); font-size:.86rem; margin-bottom:18px; border:1px solid; }
+.alert--error{ background:rgba(255,92,92,.1); border-color:rgba(255,92,92,.35); color:#FFB0B0; }
+.alert--ok{ background:var(--green-soft); border-color:rgba(25,224,92,.35); color:#8CFFB8; }
+
+.auth-foot{ text-align:center; font-size:.85rem; color:var(--muted); margin-top:22px; }
+.auth-foot a{ color:var(--green); font-weight:600; }
+
+/* =========================================================
+   ÁREA DE MEMBROS / ADMIN
+   ========================================================= */
+.app{ display:grid; grid-template-columns:262px 1fr; min-height:100vh; }
+.sidebar{
+  background:var(--bg-2); border-right:1px solid var(--border);
+  padding:22px 16px; display:flex; flex-direction:column;
+  position:sticky; top:0; height:100vh;
+}
+.sidebar .logo{ margin-bottom:30px; padding-inline:8px; }
+.sidenav{ display:grid; gap:4px; }
+.sidenav a{
+  display:flex; align-items:center; gap:12px;
+  padding:12px 14px; border-radius:var(--r-sm);
+  font-size:.92rem; font-weight:500; color:var(--text-2);
+  transition:all .18s ease;
+}
+.sidenav a:hover{ background:rgba(255,255,255,.05); color:var(--text); }
+.sidenav a.is-active{ background:var(--green-soft); color:var(--green); font-weight:700; }
+.sidenav i{ font-style:normal; width:20px; text-align:center; }
+.sidebar__foot{ margin-top:auto; padding-top:20px; border-top:1px solid var(--border); }
+.user-chip{ display:flex; align-items:center; gap:11px; padding:10px 8px; }
+.user-chip__name{ font-size:.88rem; font-weight:600; }
+.user-chip__mail{ font-size:.74rem; color:var(--muted); word-break:break-all; }
+
+.main{ padding:36px clamp(20px,4vw,44px); min-width:0; }
+.page-head{ display:flex; flex-wrap:wrap; gap:16px; align-items:center; justify-content:space-between; margin-bottom:32px; }
+.page-head h1{ font-size:1.85rem; margin:0 0 4px; }
+.page-head p{ margin:0; font-size:.92rem; }
+
+.kpis{ display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:18px; margin-bottom:36px; }
+.kpi{ background:var(--surface); border:1px solid var(--border); border-radius:var(--r); padding:22px; }
+.kpi__label{ font-size:.75rem; color:var(--muted); letter-spacing:.06em; text-transform:uppercase; margin-bottom:10px; }
+.kpi__val{ font-family:var(--font-head); font-weight:800; font-size:1.9rem; line-height:1; }
+.kpi__delta{ font-size:.78rem; color:var(--green); margin-top:8px; }
+
+.panel{ background:var(--surface); border:1px solid var(--border); border-radius:var(--r-lg); overflow:hidden; }
+.panel__head{ padding:20px 24px; border-bottom:1px solid var(--border); display:flex; flex-wrap:wrap; gap:12px; align-items:center; justify-content:space-between; }
+.panel__head h3{ margin:0; font-size:1.05rem; }
+.panel__body{ padding:24px; }
+
+.painel-duplo{
+  display:grid; gap:22px;
+  grid-template-columns:repeat(auto-fit, minmax(340px,1fr));
+  align-items:start;
+}
+
+/* =========================================================
+   PAINEL DE CONTEÚDO DO SITE
+   Menu de grupos à esquerda, campos à direita.
+   ========================================================= */
+.cms{
+  display:grid; grid-template-columns:270px 1fr; gap:22px;
+  align-items:start;
+}
+
+.cms__nav{
+  display:grid; gap:4px;
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--r-lg);
+  padding:10px;
+  position:sticky; top:20px;
+  max-height:calc(100vh - 40px);
+  overflow-y:auto;
+}
+.cms__tab{
+  display:flex; align-items:center; gap:11px;
+  width:100%; text-align:left;
+  padding:11px 12px;
+  border:none; border-radius:var(--r-sm);
+  background:none; color:var(--text-2);
+  cursor:pointer; font-family:inherit;
+  transition:background .18s ease, color .18s ease;
+}
+.cms__tab:hover{ background:rgba(255,255,255,.05); color:var(--text); }
+.cms__tab.is-active{ background:var(--green-soft); color:var(--green); }
+.cms__tab-ico{ font-size:1.05rem; flex-shrink:0; }
+.cms__tab-txt{ display:flex; flex-direction:column; font-size:.88rem; font-weight:600; line-height:1.3; }
+.cms__tab-txt small{ font-size:.7rem; font-weight:500; color:var(--muted); }
+.cms__tab-dot{
+  width:7px; height:7px; border-radius:50%;
+  background:var(--gold); margin-left:auto; flex-shrink:0;
+}
+
+.cms__form{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--r-lg);
+  padding:28px;
+  min-width:0;
+}
+.cms__head{ padding-bottom:20px; margin-bottom:24px; border-bottom:1px solid var(--border); }
+.cms__head h2{ font-size:1.25rem; margin:0 0 4px; }
+.cms__head p{ margin:0; font-size:.88rem; }
+
+.cms__campo{ margin-bottom:24px; padding-left:14px; border-left:2px solid transparent; }
+.cms__campo.is-alterado{ border-left-color:var(--gold); }
+
+.cms__label{ display:flex; align-items:center; gap:10px; margin-bottom:6px; }
+.cms__label label{ font-size:.88rem; font-weight:600; color:var(--text); }
+.cms__reset{
+  margin-left:auto;
+  background:none; border:none; cursor:pointer;
+  color:var(--gold); font-size:.74rem; font-weight:700;
+  text-decoration:underline; font-family:inherit;
+}
+.cms__onde{ font-size:.75rem; color:var(--muted); margin-bottom:8px; }
+.cms__ajuda{ display:block; margin-top:7px; font-size:.77rem; line-height:1.5; color:var(--muted); }
+
+.cms__campo input[type=text], .cms__campo input[type=url],
+.cms__campo input[type=tel],  .cms__campo input[type=number],
+.cms__campo textarea, .cms__campo select{
+  width:100%; padding:12px 14px;
+  border-radius:var(--r-sm);
+  border:1px solid var(--border);
+  background:var(--surface-2); color:var(--text);
+  font-family:inherit; font-size:.9rem; line-height:1.55;
+  outline:none; transition:border-color .18s ease, box-shadow .18s ease;
+}
+.cms__campo textarea{ resize:vertical; }
+.cms__campo input:focus, .cms__campo textarea:focus, .cms__campo select:focus{
+  border-color:var(--green);
+  box-shadow:0 0 0 3px var(--green-soft);
+}
+
+.cms__switch{ display:flex; align-items:center; gap:10px; font-size:.88rem; cursor:pointer; }
+.cms__switch input{ width:auto; }
+
+/* Itens repetíveis */
+.cms__grupo{ display:grid; gap:14px; }
+.cms__item{
+  background:var(--surface-2);
+  border:1px solid var(--border);
+  border-radius:var(--r);
+  padding:18px;
+}
+.cms__item-head{
+  display:flex; align-items:center; gap:10px;
+  margin-bottom:14px; padding-bottom:10px;
+  border-bottom:1px solid var(--border);
+}
+.cms__item-head b{
+  width:24px; height:24px; border-radius:7px;
+  display:grid; place-items:center;
+  background:var(--green-soft); color:var(--green);
+  font-size:.76rem;
+}
+.cms__item-acoes{ display:flex; gap:5px; margin-left:auto; }
+.cms__item-acoes .icon-btn{ width:29px; height:29px; font-size:.8rem; }
+.cms__item-acoes .icon-btn:disabled{ opacity:.3; cursor:not-allowed; }
+.cms__item .field label{ font-size:.78rem; }
+
+/* O codigo da categoria: aparece para explicar por que renomear e
+   seguro e ele nao, e se parece com o que e - um dado, nao um campo. */
+.cms__item input[readonly]{
+  background:var(--bg-2); color:var(--muted);
+  cursor:default; font-family:ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+.table-wrap{ overflow-x:auto; }
+/* 7 colunas não cabem confortavelmente em 700px — os selos de
+   status ficavam espremidos e quebrando linha no meio da palavra. */
+table{ width:100%; border-collapse:collapse; min-width:900px; }
+th{
+  text-align:left; padding:14px 20px;
+  font-size:.72rem; letter-spacing:.09em; text-transform:uppercase;
+  color:var(--muted); font-weight:800;
+  border-bottom:1px solid var(--border);
+  background:rgba(255,255,255,.02);
+}
+td{ padding:15px 20px; border-bottom:1px solid var(--border); font-size:.9rem; vertical-align:middle; }
+tr:last-child td{ border-bottom:none; }
+tbody tr:hover{ background:rgba(255,255,255,.02); }
+
+.pill{
+  display:inline-flex; align-items:center; gap:6px;
+  padding:4px 11px; border-radius:var(--r-pill);
+  font-size:.72rem; font-weight:800;
+  line-height:1.5; white-space:nowrap;
+}
+/* Container dos selos de status: empilha em vez de espremer */
+.pills{ display:flex; flex-wrap:wrap; gap:5px; }
+.pill--on{ background:var(--green-soft); color:var(--green); }
+.pill--off{ background:rgba(255,255,255,.07); color:var(--muted); }
+.pill--warn{ background:var(--gold-soft); color:var(--gold); }
+.pill--hero{ background:var(--grad-gold); color:#1A1200; }
+
+/* Botão de estrela: marca qual produto vai para o card da home */
+.icon-btn--hero{
+  background:var(--grad-gold);
+  border-color:transparent;
+  color:#1A1200;
+}
+.icon-btn--hero:hover{ background:var(--grad-gold); color:#1A1200; }
+
+/* =========================================================
+   UPLOAD DE CAPA
+   ========================================================= */
+.upload{
+  display:grid; grid-template-columns:200px 1fr; gap:18px;
+  padding:16px;
+  background:var(--surface-2);
+  border:2px dashed var(--border-2);
+  border-radius:var(--r);
+  transition:border-color .2s ease, background .2s ease;
+}
+.upload.is-over{
+  border-color:var(--green);
+  background:var(--green-soft);
+}
+.upload__preview{
+  aspect-ratio:16/10;
+  border-radius:var(--r-sm);
+  overflow:hidden;
+  display:grid; place-items:center;
+  background:linear-gradient(140deg,#0B2415,#12180A);
+  border:1px solid var(--border);
+}
+.upload__preview img{ width:100%; height:100%; object-fit:cover; }
+.upload__vazio{ font-size:.78rem; color:var(--muted); }
+.upload__acoes{
+  display:flex; flex-direction:column;
+  align-items:flex-start; gap:10px;
+  justify-content:center;
+}
+.upload__acoes small{ font-size:.76rem; line-height:1.5; }
+
+@media (max-width:640px){
+  .upload{ grid-template-columns:1fr; }
+}
+
+.icon-btn{
+  width:34px; height:34px; border-radius:8px;
+  background:rgba(255,255,255,.05); border:1px solid var(--border);
+  color:var(--text-2); cursor:pointer; transition:all .18s ease;
+}
+.icon-btn:hover{ background:rgba(255,255,255,.1); color:var(--text); }
+.icon-btn--danger:hover{ background:rgba(255,92,92,.15); color:var(--danger); border-color:rgba(255,92,92,.4); }
+
+.my-products{ display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:22px; }
+.mycard{ background:var(--surface); border:1px solid var(--border); border-radius:var(--r-lg); overflow:hidden; display:flex; flex-direction:column; }
+.mycard__media{ aspect-ratio:16/9; display:grid; place-items:center; }
+.mycard__media span{ font-family:var(--font-head); font-weight:800; font-size:1.4rem; text-align:center; padding:0 16px; }
+.mycard__body{ padding:20px; flex:1; display:flex; flex-direction:column; }
+.progress{ height:6px; border-radius:99px; background:rgba(255,255,255,.08); overflow:hidden; margin:14px 0 8px; }
+.progress__bar{ height:100%; border-radius:99px; background:var(--grad-brand); }
+
+/* Modal */
+.modal{
+  position:fixed; inset:0; z-index:100;
+  background:rgba(2,5,3,.8); backdrop-filter:blur(6px);
+  display:none; place-items:center; padding:24px; overflow-y:auto;
+}
+.modal.is-open{ display:grid; }
+.modal__box{
+  background:var(--surface); border:1px solid var(--border-2);
+  border-radius:var(--r-lg); width:100%; max-width:620px;
+  box-shadow:var(--shadow-lg); margin:auto;
+}
+.modal__head{ padding:22px 26px; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; }
+.modal__head h3{ margin:0; font-size:1.15rem; }
+.modal__body{ padding:26px; }
+.modal__foot{ padding:18px 26px; border-top:1px solid var(--border); display:flex; gap:12px; justify-content:flex-end; }
+
+.toast{
+  position:fixed; bottom:24px; right:24px; z-index:200;
+  background:var(--surface-2);
+  border:1px solid var(--green); border-left-width:4px;
+  border-radius:var(--r-sm);
+  padding:14px 20px; font-size:.9rem; font-weight:600;
+  box-shadow:var(--shadow-lg);
+  transform:translateY(120%); opacity:0;
+  transition:all .3s cubic-bezier(.2,.9,.3,1.2);
+}
+.toast.is-show{ transform:translateY(0); opacity:1; }
+
+/* ---------- Reveal ---------- */
+.reveal{ opacity:0; transform:translateY(22px); transition:opacity .6s ease, transform .6s ease; }
+.reveal.is-in{ opacity:1; transform:none; }
+@media (prefers-reduced-motion:reduce){
+  .reveal{ opacity:1; transform:none; transition:none; }
+}
+
+/* =========================================================
+   RESPONSIVO
+   ========================================================= */
+@media (max-width:1024px){
+  .hero__grid{ grid-template-columns:1fr; }
+  .hero__visual{ max-width:460px; margin-inline:auto; }
+  .pillars{ grid-template-columns:repeat(2,1fr); }
+  .about{ grid-template-columns:1fr; }
+  .about__photo{ max-width:340px; }
+  .pdp{ grid-template-columns:1fr; }
+  .pdp__box{ position:static; }
+  .footer__grid{ grid-template-columns:1fr 1fr; }
+  .app{ grid-template-columns:1fr; }
+  .sidebar{
+    position:static; height:auto; flex-direction:row;
+    align-items:center; gap:18px; overflow-x:auto;
+    border-right:none; border-bottom:1px solid var(--border);
+    padding:14px 16px;
+  }
+  .sidebar .logo{ margin:0; }
+  .sidenav{ grid-auto-flow:column; gap:4px; }
+  .sidenav a{ white-space:nowrap; padding:10px 14px; }
+  .sidebar__foot{ margin-top:0; margin-left:auto; padding-top:0; border-top:none; }
+  .user-chip__mail{ display:none; }
+
+  /* Painel de conteúdo: menu vira uma faixa rolável no topo */
+  .cms{ grid-template-columns:1fr; }
+  .cms__nav{
+    position:static; max-height:none;
+    display:flex; gap:6px; overflow-x:auto;
+  }
+  .cms__tab{ flex-shrink:0; width:auto; }
+  .cms__tab-txt small{ display:none; }
+  .cms__form{ padding:20px; }
+}
+
+@media (max-width:860px){
+  .auth-wrap{ grid-template-columns:1fr; }
+  .auth-side{ display:none; }
+  .endereco-box{ grid-template-columns:1fr; padding:26px; }
+  .endereco-box__mapa{ max-width:320px; margin-inline:auto; }
+  .filtros__linha--fim{ flex-direction:column; align-items:stretch; }
+  .ordenar{ justify-content:space-between; }
+}
+
+@media (max-width:768px){
+  .nav{ display:none; }
+  .burger{ display:block; margin-left:auto; }
+  .wpp-float{ right:14px; bottom:14px; height:54px; padding:0 13px; }
+  .wpp-float svg{ width:28px; height:28px; }
+  /* Com a barra de compra fixa, sobe o WhatsApp para não cobrir */
+  body.has-buybar .wpp-float{ bottom:84px; }
+  /* Some com o botao do cabecalho no celular, seja qual for a variante.
+     Antes a regra era so .btn--buy, e produtos.html usa .btn--primary:
+     o botao ficava visivel e empurrava o menu sanduiche para fora da
+     tela em 320 e 360px — o menu ficava inalcancavel. Mirar em .btn
+     impede que isso volte quando alguem criar pagina com outra variante. */
+  .header__actions .btn{ display:none; }
+  .buybar{ display:flex; }
+  body.has-buybar{ padding-bottom:84px; }
+  .hero__proof{ gap:22px; }
+  .stat__num{ font-size:1.45rem; }
+  .guarantee{ flex-direction:column; text-align:center; }
+  .catalog-bar{ flex-direction:column; align-items:stretch; }
+  .search{ max-width:none; }
+  .footer__grid{ grid-template-columns:1fr; gap:28px; }
+  .field-row{ grid-template-columns:1fr; }
+  .modal__foot{ flex-direction:column-reverse; }
+  .modal__foot .btn{ width:100%; }
+  .toast{ left:16px; right:16px; bottom:16px; }
+}
+
+@media (max-width:480px){
+  :root{ --gutter:18px; }
+
+  /* .btn tem white-space:nowrap, o que e certo em tela larga: botao nao
+     deve quebrar no meio. Em 320px, porem, um botao--lg de texto longo
+     nao cabe e empurra a pagina inteira — era o caso do CTA do contato,
+     338px de largura numa tela de 320. Aqui o texto pode quebrar e o
+     respiro encolhe. */
+  .btn{ white-space:normal; text-align:center; }
+  .btn--lg{ padding:15px 20px; font-size:.96rem; }
+  .btn--sm{ padding:10px 14px; }
+  /* A frase que se digita fica numa linha só (nowrap). Em tela
+     estreita o título precisa encolher um pouco para ela caber. */
+  .hero h1{ font-size:1.9rem; }
+  .grid{ grid-template-columns:1fr; }
+  /* Pedido do Gabriel: 4 blocos empilhados gastavam a tela do celular.
+     Fica 2x2 e enxuto. */
+  .pillars{ grid-template-columns:repeat(2,1fr); }
+  .pillar{ padding:14px 10px; }
+  .pillar__ico{ width:34px; height:34px; margin-bottom:6px; font-size:1rem; }
+  .pillar h4{ font-size:.74rem; }
+  .pillar p{ display:none; }
+  .float-badge{ display:none; }
+}
+
+/* Separador "ou" entre os dois jeitos de entrar */
+.ou{
+  display:flex; align-items:center; gap:14px;
+  margin:22px 0;
+  font-size:.78rem; color:var(--muted);
+}
+.ou::before, .ou::after{
+  content:""; flex:1; height:1px; background:var(--border);
+}

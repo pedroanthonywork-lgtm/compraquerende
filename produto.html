@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Carregando produto… — Compra Que Rende</title>
+<meta name="description" content="Detalhes do produto, conteúdo, o que está incluso e condições de compra.">
+<meta name="theme-color" content="#050806">
+<meta property="og:type" content="product">
+<meta property="og:locale" content="pt_BR">
+<meta property="og:site_name" content="Compra Que Rende">
+<meta property="og:title" content="Compra Que Rende">
+<meta property="og:description" content="Cursos, e-books e guias a partir de R$ 9,90, com 7 dias de garantia.">
+<meta property="og:image" content="https://compraquerende.com.br/assets/img/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:url" content="https://compraquerende.com.br/produtos">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Compra Que Rende">
+<meta name="twitter:description" content="Cursos, e-books e guias a partir de R$ 9,90, com 7 dias de garantia.">
+<meta name="twitter:image" content="https://compraquerende.com.br/assets/img/og.jpg">
+
+<link rel="icon" href="assets/img/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css">
+<link rel="stylesheet" href="assets/css/effects.css">
+</head>
+<body class="has-buybar">
+
+<div class="aurora" aria-hidden="true"></div>
+<div class="grain" aria-hidden="true"></div>
+<div class="scroll-progress" aria-hidden="true"></div>
+
+<header class="header">
+  <div class="container header__inner">
+    <a class="logo" href="index.html">
+      <svg class="logo__mark" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+        <defs>
+          <linearGradient id="lgG2" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2BFF6E"/><stop offset="1" stop-color="#0FB847"/></linearGradient>
+          <linearGradient id="lgY2" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFE07A"/><stop offset="1" stop-color="#F0A400"/></linearGradient>
+        </defs>
+        <path d="M4 9h6l5.2 20.5h20.4l4.4-14.2H14.2" stroke="url(#lgY2)" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="18.5" cy="38.5" r="3.4" fill="url(#lgY2)"/>
+        <circle cx="33.5" cy="38.5" r="3.4" fill="url(#lgY2)"/>
+        <rect x="19" y="21" width="3.6" height="6"  rx="1.4" fill="url(#lgG2)"/>
+        <rect x="25" y="17" width="3.6" height="10" rx="1.4" fill="url(#lgG2)"/>
+        <rect x="31" y="12" width="3.6" height="15" rx="1.4" fill="url(#lgG2)"/>
+        <path d="M18 17.5 26 10l4.5 4.5L39 6" stroke="url(#lgG2)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M32 5.5h7.5V13" stroke="url(#lgG2)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <span class="logo__txt">COMPRA <b>QUE RENDE</b><i>cursos que geram resultados</i></span>
+    </a>
+
+    <nav class="nav">
+      <a href="index.html">Início</a>
+      <a href="produtos.html">Produtos</a>
+      <a href="index.html#como-funciona">Como funciona</a>
+      <a href="contato.html">Contato</a>
+    </nav>
+
+    <div class="header__actions">
+      <a class="btn btn--buy btn--sm" href="#" id="ctaHeader">Comprar agora</a>
+    </div>
+
+    <button class="burger" aria-label="Abrir menu">&#9776;</button>
+  </div>
+</header>
+
+<div class="mobile-menu">
+  <a href="index.html">Início</a>
+  <a href="produtos.html">Produtos</a>
+  <a href="index.html#como-funciona">Como funciona</a>
+  <a href="contato.html">Contato</a>
+</div>
+
+<main id="conteudo"></main>
+
+<div class="buybar" id="buybar"></div>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer__bottom" style="border-top:none;padding-top:0">
+      <span>© <span id="ano"></span> Compra Que Rende</span>
+      <span>Pagamentos processados por <b class="gold-text">Cakto</b> 🔒</span>
+    </div>
+    <p class="footer__disclaimer" id="rodapeEndereco"></p>
+  </div>
+</footer>
+
+<script src="assets/js/data.js"></script>
+<script src="assets/js/conteudo.js"></script>
+<script src="assets/js/app.js"></script>
+<script>
+function renderizarProduto(){
+/* =========================================================
+   PÁGINA DE PRODUTO
+   Lê ?p=slug da URL e monta a página a partir do catálogo.
+   ========================================================= */
+document.getElementById('ano').textContent = new Date().getFullYear();
+
+const slug = new URLSearchParams(location.search).get('p');
+const p = slug ? DB.porSlug(slug) : null;
+const alvo = document.getElementById('conteudo');
+
+if (!p){
+  document.body.classList.remove('has-buybar');
+  alvo.innerHTML = `
+    <section class="section">
+      <div class="container center" style="max-width:520px">
+        <h1>Produto não encontrado</h1>
+        <p>O link que você acessou não existe mais ou o produto saiu do catálogo.</p>
+        <a class="btn btn--buy btn--lg" href="produtos.html">Ver todos os produtos</a>
+      </div>
+    </section>`;
+} else {
+  document.title = `${p.titulo} — ${DB.nomeTipo(p.tipo)} por ${fmtBRL(p.preco)} | Compra Que Rende`;
+  document.querySelector('meta[name="description"]').content = p.descricaoCurta;
+
+  /* =========================================================
+     SEO da página de produto
+
+     O HTML é um só para todos os produtos, e quem preenche é o
+     JavaScript. O Google renderiza JS antes de indexar, então
+     canonical, Open Graph e dados estruturados escritos aqui
+     valem para ele.
+
+     Já o robô do WhatsApp e do Facebook **não executa JS**: a
+     prévia de um link compartilhado usa o que veio no HTML, que
+     é o cartão genérico da marca. Para ter prévia por produto
+     seria preciso gerar uma página por produto no deploy, ou pôr
+     um servidor na frente — nenhum dos dois se justifica ainda.
+     ========================================================= */
+  const urlProduto = `https://compraquerende.com.br/produto?p=${encodeURIComponent(p.slug || '')}`;
+  const capaAbsoluta = (p.capa && p.capa.startsWith('http'))
+    ? p.capa
+    : 'https://compraquerende.com.br/assets/img/og.jpg';
+
+  const canonical = document.createElement('link');
+  canonical.rel = 'canonical';
+  canonical.href = urlProduto;
+  document.head.appendChild(canonical);
+
+  const meta = {
+    'og:title':       `${p.titulo} — ${DB.nomeTipo(p.tipo)}`,
+    'og:description': p.descricaoCurta,
+    'og:image':       capaAbsoluta,
+    'og:url':         urlProduto,
+    'twitter:title':  `${p.titulo} — ${DB.nomeTipo(p.tipo)}`,
+    'twitter:description': p.descricaoCurta,
+    'twitter:image':  capaAbsoluta
+  };
+  Object.entries(meta).forEach(([chave, valor]) => {
+    const seletor = chave.startsWith('og:')
+      ? `meta[property="${chave}"]`
+      : `meta[name="${chave}"]`;
+    const el = document.querySelector(seletor);
+    if (el) el.content = valor;
+  });
+
+  /* Dados estruturados: é o que permite o Google mostrar preço e
+     disponibilidade direto no resultado da busca. Sem nota nem
+     número de avaliações de propriedade — declarar avaliação que
+     não existe é motivo de punição manual no Search Console. */
+  const dados = {
+    '@context': 'https://schema.org',
+    '@type': 'Product',
+    name: p.titulo,
+    description: p.descricaoCurta,
+    image: capaAbsoluta,
+    category: DB.nomeCategoria(p.categoria),
+    brand: { '@type': 'Brand', name: 'Compra Que Rende' },
+    offers: {
+      '@type': 'Offer',
+      url: urlProduto,
+      price: Number(p.preco).toFixed(2),
+      priceCurrency: 'BRL',
+      availability: 'https://schema.org/InStock',
+      seller: { '@type': 'Organization', name: 'Compra Que Rende' }
+    }
+  };
+  if (p.nota && p.alunos){
+    dados.aggregateRating = {
+      '@type': 'AggregateRating',
+      ratingValue: p.nota,
+      reviewCount: p.alunos
+    };
+  }
+
+  const ld = document.createElement('script');
+  ld.type = 'application/ld+json';
+  ld.textContent = JSON.stringify(dados);
+  document.head.appendChild(ld);
+
+  const off = p.precoDe ? Math.round((1 - p.preco / p.precoDe) * 100) : 0;
+  const ehCurso = p.tipo === 'curso';
+
+  alvo.innerHTML = `
+  <div class="container">
+    <nav class="breadcrumb">
+      <a href="index.html">Início</a> ›
+      <a href="produtos.html">Produtos</a> ›
+      <a href="produtos.html?cat=${encodeURIComponent(p.categoria || '')}">${esc(DB.nomeCategoria(p.categoria))}</a> ›
+      <span>${esc(p.titulo)}</span>
+    </nav>
+
+    <div class="pdp">
+
+      <!-- ===== Coluna principal ===== -->
+      <div>
+        <!-- O nome escrito por cima e o conteudo da capa de reserva:
+             sem foto, o quadro seria um gradiente vazio. Com foto, ele
+             so atravessa a imagem — e o mesmo nome esta no <h1> logo
+             abaixo, entao nao se perde nada tirando. -->
+        <div class="pdp__media reveal-zoom" style="background:${DB.capa(p, 1280)}">
+          ${p.capa ? '' : `<span class="grad-text">${esc(p.titulo)}</span>`}
+        </div>
+
+        <span class="eyebrow reveal">
+          <span class="dot"></span>
+          ${esc(DB.iconeTipo(p.tipo))} ${esc(DB.nomeTipo(p.tipo))} · ${esc(DB.nomeCategoria(p.categoria))}
+        </span>
+        <h1 class="reveal">${esc(p.titulo)}</h1>
+        <p class="pdp__lead reveal" data-delay="60">${esc(p.subtitulo)}</p>
+
+        <div class="card__meta reveal" data-delay="90" style="border-bottom:none;padding-bottom:0">
+          ${p.nota   ? `<span class="gold-text">★ ${esc(p.nota)}</span>` : ''}
+          ${p.alunos ? `<span>${esc(Number(p.alunos).toLocaleString('pt-BR'))} pessoas compraram</span>` : ''}
+          ${DB.metaDe(p).map(m => `<span>${esc(m)}</span>`).join('')}
+        </div>
+
+        ${!(p.modulos || []).length ? '' : `
+        <h2 class="reveal" style="margin-top:48px">
+          ${ehCurso ? 'O que você vai aprender' : 'O que tem dentro'}
+        </h2>
+        <div class="modules">
+          ${p.modulos.map((m, i) => `
+            <div class="module spotlight reveal" data-delay="${i * 70}">
+              <div class="module__n">${String(i + 1).padStart(2, '0')}</div>
+              <div>
+                <h4>${esc(m.titulo)}</h4>
+                <p>${esc(m.desc)}</p>
+              </div>
+            </div>`).join('')}
+        </div>`}
+
+        <h2 class="reveal" style="margin-top:56px">Para quem é</h2>
+        <ul class="checklist">
+          ${p.paraQuem.map((t, i) => `<li class="reveal" data-delay="${i * 70}"><i>✓</i><span>${esc(t)}</span></li>`).join('')}
+        </ul>
+
+        <div class="guarantee reveal-zoom">
+          <div class="guarantee__seal">7 DIAS<br>GARANTIA</div>
+          <div>
+            <h3>Risco zero para você</h3>
+            <p>
+              Comprou, acessou e achou que não é para você? Pede o reembolso dentro de 7 dias
+              direto na Cakto e recebe <b>100% do valor de volta</b> — sem precisar justificar
+              e sem letra miúda.
+            </p>
+          </div>
+        </div>
+
+        <div class="ajuda-box reveal">
+          <div>
+            <h3 style="margin-bottom:6px">Ficou com dúvida sobre este produto?</h3>
+            <p class="mb-0">Chama no WhatsApp antes de comprar. Se não for para você, a gente fala.</p>
+          </div>
+          <a class="btn btn--primary" id="ctaWhatsProduto" target="_blank" rel="noopener">💬 Perguntar</a>
+        </div>
+      </div>
+
+      <!-- ===== Caixa de compra ===== -->
+      <aside>
+        <div class="pdp__box glow-border is-always">
+          ${off ? `<span class="card__badge card__badge--hot" style="position:static;display:inline-block;margin-bottom:14px">${off}% de desconto</span>` : ''}
+
+          <div class="pdp__price">
+            <span class="now">${fmtBRL(p.preco)}</span>
+            ${p.precoDe ? `<span class="old">${fmtBRL(p.precoDe)}</span>` : ''}
+          </div>
+          <div class="pdp__installment">à vista no Pix · ou parcelado no cartão</div>
+
+          <button class="btn btn--buy btn--lg btn--block btn--pulse" id="btnComprar">
+            Comprar agora →
+          </button>
+
+          <ul>
+            ${p.beneficios.map(b => `<li><i>✓</i><span>${esc(b)}</span></li>`).join('')}
+          </ul>
+
+          <div class="pdp__secure">
+            🔒 Compra segura processada pela <b>Cakto</b><br>
+            Pix · Cartão · Boleto
+          </div>
+        </div>
+      </aside>
+
+    </div>
+
+    <!-- ===== Relacionados ===== -->
+    <section class="section section--tight">
+      <div class="sec-head reveal">
+        <h2>Quem viu este também levou</h2>
+      </div>
+      <div class="grid" id="relacionados"></div>
+    </section>
+  </div>`;
+
+  /* ---- Botões de compra → Cakto ---- */
+  const comprar = origem => irParaHotmart(p, origem);
+  document.getElementById('btnComprar').addEventListener('click', () => comprar('pdp-principal'));
+  document.getElementById('ctaHeader').addEventListener('click', e => { e.preventDefault(); comprar('topo'); });
+
+  /* ---- WhatsApp com o nome do produto na mensagem ---- */
+  document.getElementById('ctaWhatsProduto').href =
+    linkWhats(`Olá! Tenho uma dúvida sobre o produto "${p.titulo}".`);
+
+  /* ---- Barra fixa mobile ---- */
+  document.getElementById('buybar').innerHTML = `
+    <div class="price">
+      ${p.precoDe ? `<span class="price__old">${fmtBRL(p.precoDe)}</span>` : ''}
+      <span class="price__now">${fmtBRL(p.preco)}</span>
+    </div>
+    <button class="btn btn--buy" id="btnComprarMobile">Comprar agora</button>`;
+  document.getElementById('btnComprarMobile').addEventListener('click', () => comprar('barra'));
+
+  /* ---- Relacionados: mesma categoria primeiro ---- */
+  let rel = DB.listar().filter(x => x.categoria === p.categoria && x.id !== p.id);
+  if (rel.length < 3){
+    rel = rel.concat(DB.listar().filter(x => x.categoria !== p.categoria && x.id !== p.id));
+  }
+  document.getElementById('relacionados').innerHTML =
+    rel.slice(0, 3).map((x, i) => cardProduto(x, i)).join('');
+
+  initReveal();
+  initTilt();
+}
+
+document.getElementById('rodapeEndereco').innerHTML =
+  `${esc(CONTATO.endereco)} — ${esc(CONTATO.cidade)} · CEP ${esc(CONTATO.cep)}. ` +
+  `Produto comercializado e entregue pela plataforma Cakto, responsável pelo processamento do ` +
+  `pagamento e pela emissão da nota fiscal. Resultados citados são individuais e não constituem ` +
+  `garantia de resultado.`;
+
+/* Reaplica os textos do painel: quando o app.js rodou, a
+   resposta do servidor ainda não tinha chegado. */
+Site.aplicar();
+}
+</script>
+
+<script type="module">
+/* Busca catálogo e textos na API do servidor e só então desenha a
+   página. Se o servidor estiver fora ou demorar, iniciar() devolve
+   sem erro e a página abre com os dados de exemplo. */
+import { iniciar } from './assets/js/api.js';
+await iniciar();
+renderizarProduto();
+</script>
+
+</body>
+</html>

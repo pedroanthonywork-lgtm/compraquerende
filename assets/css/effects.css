@@ -1,0 +1,393 @@
+/* =========================================================
+   COMPRA QUE RENDE — Camada de EFEITOS
+   Carregue DEPOIS de style.css
+   Tudo aqui é opcional: se remover este arquivo o site continua
+   funcionando, só fica sem os efeitos.
+   ========================================================= */
+
+/* ---------------------------------------------------------
+   0. Barra de progresso de scroll (topo da página)
+   --------------------------------------------------------- */
+.scroll-progress{
+  position:fixed; top:0; left:0; z-index:100;
+  height:3px; width:0%;
+  background:var(--grad-brand);
+  box-shadow:0 0 14px rgba(25,224,92,.8);
+  transition:width .08s linear;
+  pointer-events:none;
+}
+
+/* ---------------------------------------------------------
+   1. Fundo "aurora" animado + grão de filme
+   --------------------------------------------------------- */
+.aurora{
+  position:fixed; inset:0; z-index:-2;
+  pointer-events:none; overflow:hidden;
+}
+.aurora::before,
+.aurora::after{
+  content:""; position:absolute;
+  width:70vmax; height:70vmax; border-radius:50%;
+  filter:blur(90px); opacity:.32;
+  will-change:transform;
+}
+.aurora::before{
+  background:radial-gradient(circle, rgba(25,224,92,.30), transparent 65%);
+  top:-28vmax; left:-18vmax;
+  animation:auroraA 24s ease-in-out infinite alternate;
+}
+.aurora::after{
+  background:radial-gradient(circle, rgba(255,197,49,.22), transparent 65%);
+  bottom:-32vmax; right:-20vmax;
+  animation:auroraB 30s ease-in-out infinite alternate;
+}
+@keyframes auroraA{
+  0%  { transform:translate(0,0) scale(1); }
+  50% { transform:translate(14vw,8vh) scale(1.15); }
+  100%{ transform:translate(-6vw,16vh) scale(.95); }
+}
+@keyframes auroraB{
+  0%  { transform:translate(0,0) scale(1); }
+  50% { transform:translate(-12vw,-10vh) scale(1.2); }
+  100%{ transform:translate(8vw,-4vh) scale(1); }
+}
+
+/* Grão sutil por cima de tudo — dá textura de "produto premium".
+   Mantido bem baixo: acima de ~.02 ele come o contraste do texto. */
+.grain{
+  position:fixed; inset:0; z-index:99;
+  pointer-events:none; opacity:.018;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  mix-blend-mode:overlay;
+}
+
+/* Grade de pontos no hero */
+.dot-grid{
+  position:absolute; inset:0; z-index:0; pointer-events:none;
+  background-image:radial-gradient(rgba(255,255,255,.07) 1px, transparent 1px);
+  background-size:26px 26px;
+  mask-image:radial-gradient(ellipse 70% 60% at 50% 35%, #000 20%, transparent 75%);
+  -webkit-mask-image:radial-gradient(ellipse 70% 60% at 50% 35%, #000 20%, transparent 75%);
+}
+
+/* ---------------------------------------------------------
+   2. Borda de gradiente animada (cards em destaque)
+   --------------------------------------------------------- */
+@property --ang{ syntax:'<angle>'; initial-value:0deg; inherits:false; }
+
+.glow-border{ position:relative; isolation:isolate; }
+.glow-border::before{
+  content:""; position:absolute; inset:-1.5px; z-index:-1;
+  border-radius:inherit;
+  background:conic-gradient(from var(--ang),
+    transparent 0deg, var(--green) 60deg, var(--gold) 120deg, transparent 200deg, transparent 360deg);
+  animation:spinAng 4.5s linear infinite;
+  opacity:0; transition:opacity .35s ease;
+}
+.glow-border:hover::before{ opacity:1; }
+@keyframes spinAng{ to{ --ang:360deg; } }
+
+/* PARADA, não girando.
+   Em cima de blocos com muito texto (caixa de preço, benefícios) a
+   borda em movimento rouba o olho e atrapalha a leitura. Aqui ela
+   vira um anel fixo: dá o mesmo destaque, sem movimento nenhum. */
+.glow-border.is-always::before{
+  opacity:.5;
+  animation:none;
+  background:linear-gradient(140deg, var(--green), transparent 45%, transparent 60%, var(--gold));
+}
+
+/* Fallback p/ navegadores sem @property */
+@supports not (background: conic-gradient(from var(--ang), red, blue)){
+  .glow-border::before{
+    background:linear-gradient(120deg, var(--green), var(--gold), var(--green));
+    background-size:250% 250%;
+    animation:slideBg 4s linear infinite;
+  }
+  @keyframes slideBg{ to{ background-position:250% 0; } }
+}
+
+/* ---------------------------------------------------------
+   3. Shimmer / brilho passando nos botões
+   --------------------------------------------------------- */
+.btn{ position:relative; overflow:hidden; isolation:isolate; }
+.btn::after{
+  content:""; position:absolute; top:0; left:-120%;
+  width:60%; height:100%;
+  background:linear-gradient(100deg, transparent, rgba(255,255,255,.45), transparent);
+  transform:skewX(-20deg);
+  transition:left .65s cubic-bezier(.22,.8,.3,1);
+  pointer-events:none;
+}
+.btn:hover::after{ left:150%; }
+
+/* Pulso permanente no CTA principal */
+.btn--pulse{ animation:ctaPulse 2.6s ease-in-out infinite; }
+@keyframes ctaPulse{
+  0%,100%{ box-shadow:0 8px 28px -8px rgba(255,197,49,.6), 0 0 0 0 rgba(255,197,49,.45); }
+  55%    { box-shadow:0 8px 28px -8px rgba(255,197,49,.8), 0 0 0 16px rgba(255,197,49,0); }
+}
+
+/* ---------------------------------------------------------
+   4. Cards: tilt 3D + spotlight que segue o mouse
+   --------------------------------------------------------- */
+/* NOTA: nada de translateZ nos filhos. Empurrar o texto no eixo Z
+   força o navegador a reamostrar a fonte e ela sai borrada/tremida —
+   era isso que atrapalhava a leitura. O tilt fica só no container. */
+.tilt{
+  transition:transform .3s cubic-bezier(.2,.8,.3,1), box-shadow .3s ease, border-color .3s ease;
+  will-change:transform;
+}
+
+/* Spotlight discreto — e só na METADE DE CIMA do card, para nunca
+   passar por cima do título e da descrição. */
+.spotlight{ position:relative; }
+.spotlight::after{
+  content:""; position:absolute; inset:0;
+  border-radius:inherit; pointer-events:none;
+  background:radial-gradient(300px circle at var(--mx,50%) var(--my,50%),
+            rgba(25,224,92,.06), transparent 45%);
+  opacity:0; transition:opacity .35s ease;
+}
+.spotlight:hover::after{ opacity:1; }
+
+/* Zoom na capa do card — bem leve */
+.card__media{ transition:transform .55s cubic-bezier(.2,.8,.3,1); }
+.card:hover .card__media{ transform:scale(1.03); }
+
+/* Brilho varrendo a capa (fica só na imagem, nunca no texto) */
+.card__media::after{
+  content:""; position:absolute; top:0; left:-150%;
+  width:70%; height:100%;
+  background:linear-gradient(100deg, transparent, rgba(255,255,255,.10), transparent);
+  transform:skewX(-18deg);
+  transition:left .9s cubic-bezier(.22,.8,.3,1);
+}
+.card:hover .card__media::after{ left:160%; }
+
+/* Conteúdo de texto do card fica acima de qualquer overlay */
+.card__body,
+.mycard__body{ position:relative; z-index:2; }
+
+/* ---------------------------------------------------------
+   5. Reveal com variações + stagger
+   --------------------------------------------------------- */
+.reveal{ opacity:0; transform:translateY(26px); transition:opacity .7s cubic-bezier(.2,.8,.3,1), transform .7s cubic-bezier(.2,.8,.3,1); }
+.reveal-left{  opacity:0; transform:translateX(-34px); transition:opacity .7s ease, transform .7s cubic-bezier(.2,.8,.3,1); }
+.reveal-right{ opacity:0; transform:translateX(34px);  transition:opacity .7s ease, transform .7s cubic-bezier(.2,.8,.3,1); }
+.reveal-zoom{  opacity:0; transform:scale(.92);        transition:opacity .7s ease, transform .7s cubic-bezier(.2,.8,.3,1); }
+.reveal-blur{  opacity:0; filter:blur(12px); transform:translateY(20px); transition:opacity .8s ease, filter .8s ease, transform .8s ease; }
+
+.is-in{ opacity:1 !important; transform:none !important; filter:none !important; }
+
+/* ---------------------------------------------------------
+   6. Texto: máquina de escrever + destaque riscado
+   --------------------------------------------------------- */
+/* O texto que se digita muda de largura a cada letra. Se ele ficar
+   no fluxo normal, a linha do título rewrapa e empurra a página
+   inteira para cima e para baixo.
+
+   Como resolve:
+   - .tw__ghost tem a palavra MAIS LARGA e é invisível, mas ocupa
+     espaço — é ele quem define o tamanho da caixa, que nunca muda.
+   - .tw__live fica absoluto por cima, fora do fluxo, então crescer
+     e encolher não afeta mais nada na página.                        */
+.tw{
+  position:relative;
+  display:inline-block;
+  vertical-align:top;
+  max-width:100%;
+}
+.tw__ghost{
+  visibility:hidden;      /* invisível, mas continua ocupando espaço */
+  pointer-events:none;
+  user-select:none;
+  white-space:nowrap;     /* mede a largura de UMA linha, sem quebrar */
+  padding-right:10px;     /* folga para o cursor piscando */
+}
+.tw__live{
+  position:absolute;
+  inset:0;
+  white-space:nowrap;
+}
+
+/* Cursor piscando. Fica irmão do texto, não filho: quando o texto usa
+   background-clip:text, tudo que estiver DENTRO dele é recortado no
+   formato das letras e o cursor desapareceria. */
+.tw__caret{
+  display:inline-block; width:3px; height:.92em;
+  background:var(--green);
+  margin-left:4px; vertical-align:-2px;
+  animation:caret .75s step-end infinite;
+}
+@keyframes caret{ 50%{ opacity:0; } }
+
+@media (prefers-reduced-motion:reduce){
+  .tw__caret{ display:none; }
+}
+
+.underline-swipe{ position:relative; display:inline-block; }
+.underline-swipe::after{
+  content:""; position:absolute; left:0; bottom:.06em;
+  height:.32em; width:100%;
+  background:var(--gold); opacity:.28;
+  border-radius:3px;
+  transform:scaleX(0); transform-origin:left;
+  transition:transform .8s cubic-bezier(.2,.8,.3,1) .3s;
+}
+.underline-swipe.is-in::after{ transform:scaleX(1); }
+
+/* ---------------------------------------------------------
+   7. Números que sobem (count-up) — só estilo do container
+   --------------------------------------------------------- */
+.stat__num[data-count]{ font-variant-numeric:tabular-nums; }
+
+/* ---------------------------------------------------------
+   8. Ponto pulsante "ao vivo"
+   --------------------------------------------------------- */
+.live-dot{
+  width:8px; height:8px; border-radius:50%;
+  background:var(--green); position:relative; flex-shrink:0;
+}
+.live-dot::after{
+  content:""; position:absolute; inset:0;
+  border-radius:50%; background:var(--green);
+  animation:ping 1.8s cubic-bezier(0,0,.2,1) infinite;
+}
+@keyframes ping{ 75%,100%{ transform:scale(2.6); opacity:0; } }
+
+/* ---------------------------------------------------------
+   9. Flutuação suave (hero card, selos)
+   --------------------------------------------------------- */
+.floaty{ animation:floaty 6s ease-in-out infinite; }
+.floaty--slow{ animation-duration:8s; animation-delay:-2s; }
+@keyframes floaty{
+  0%,100%{ transform:translateY(0); }
+  50%    { transform:translateY(-14px); }
+}
+
+/* ---------------------------------------------------------
+   10. Marquee infinito (faixa de benefícios)
+   --------------------------------------------------------- */
+.marquee{
+  border-block:1px solid var(--border);
+  background:var(--bg-2);
+  padding:16px 0; overflow:hidden;
+  mask-image:linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+  -webkit-mask-image:linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+}
+.marquee__track{
+  display:flex; gap:48px; align-items:center;
+  width:max-content;
+  animation:slideX 32s linear infinite;
+}
+.marquee:hover .marquee__track{ animation-play-state:paused; }
+.marquee__item{
+  display:flex; align-items:center; gap:10px;
+  font-family:var(--font-head); font-weight:700;
+  font-size:.95rem; color:var(--muted);
+  white-space:nowrap; text-transform:uppercase; letter-spacing:.06em;
+}
+.marquee__item i{ font-style:normal; color:var(--gold); }
+@keyframes slideX{ to{ transform:translateX(-50%); } }
+
+/* ---------------------------------------------------------
+   11. Contador regressivo da oferta
+   --------------------------------------------------------- */
+.countdown{ display:flex; gap:10px; justify-content:center; margin:20px 0 6px; }
+.cd-box{
+  min-width:64px; padding:10px 8px;
+  background:rgba(255,255,255,.05);
+  border:1px solid var(--border-2);
+  border-radius:var(--r-sm);
+  text-align:center;
+}
+.cd-box b{
+  display:block; font-family:var(--font-head);
+  font-weight:800; font-size:1.5rem; line-height:1;
+  color:var(--gold); font-variant-numeric:tabular-nums;
+}
+.cd-box span{ font-size:.62rem; text-transform:uppercase; letter-spacing:.1em; color:var(--muted); }
+
+/* ---------------------------------------------------------
+   12. Ripple no clique dos botões
+   --------------------------------------------------------- */
+.ripple{
+  position:absolute; border-radius:50%;
+  background:rgba(255,255,255,.5);
+  transform:scale(0); pointer-events:none;
+  animation:rippleGo .6s ease-out forwards;
+}
+@keyframes rippleGo{ to{ transform:scale(3.2); opacity:0; } }
+
+/* ---------------------------------------------------------
+   13. Scrollbar customizada
+   --------------------------------------------------------- */
+::-webkit-scrollbar{ width:11px; height:11px; }
+::-webkit-scrollbar-track{ background:var(--bg-2); }
+::-webkit-scrollbar-thumb{
+  background:linear-gradient(var(--green-600), var(--gold-600));
+  border-radius:99px; border:3px solid var(--bg-2);
+}
+::-webkit-scrollbar-thumb:hover{ background:linear-gradient(var(--green), var(--gold)); }
+::selection{ background:var(--green); color:#03210D; }
+
+/* ---------------------------------------------------------
+   14. Preloader
+   --------------------------------------------------------- */
+/* Esta tela cobre o site inteiro, e quem a tira e o app.js no evento
+   load. Dois jeitos de isso nao acontecer:
+
+     - o app.js nao carrega, ou estoura antes de registrar o ouvinte;
+     - o evento load demora, porque ele espera TODOS os recursos,
+       inclusive a fonte do Google — que trava em rede corporativa,
+       escola ou conexao ruim.
+
+   Nos dois casos o visitante ficaria diante de uma tela vazia sem
+   nenhuma mensagem. A animacao abaixo e a rede de protecao: sem
+   depender de JavaScript nenhum, desiste em 6 segundos e mostra o
+   site. Se o app.js funcionar, a classe is-done chega bem antes. */
+.preloader{
+  position:fixed; inset:0; z-index:300;
+  background:var(--bg);
+  display:grid; place-items:center;
+  transition:opacity .5s ease, visibility .5s ease;
+  animation:preloader-desiste 0s linear 6s forwards;
+}
+.preloader.is-done{ opacity:0; visibility:hidden; }
+@keyframes preloader-desiste{ to{ opacity:0; visibility:hidden; } }
+.preloader__ring{
+  width:54px; height:54px; border-radius:50%;
+  border:3px solid rgba(255,255,255,.1);
+  border-top-color:var(--green);
+  border-right-color:var(--gold);
+  animation:spin .9s linear infinite;
+}
+@keyframes spin{ to{ transform:rotate(360deg); } }
+
+/* ---------------------------------------------------------
+   15. Respeita quem prefere menos movimento
+   --------------------------------------------------------- */
+/* Quem pede menos movimento nao precisa ver tela de carregamento
+   nenhuma: some na hora, sem esperar JavaScript. */
+@media (prefers-reduced-motion:reduce){
+  .preloader{ display:none; }
+}
+
+@media (prefers-reduced-motion:reduce){
+  *, *::before, *::after{
+    animation-duration:.01ms !important;
+    animation-iteration-count:1 !important;
+    transition-duration:.01ms !important;
+  }
+  .reveal,.reveal-left,.reveal-right,.reveal-zoom,.reveal-blur{
+    opacity:1 !important; transform:none !important; filter:none !important;
+  }
+  .aurora{ display:none; }
+}
+
+/* Em telas pequenas, corta o que pesa */
+@media (max-width:768px){
+  .tilt{ transform:none !important; }
+  .grain{ display:none; }
+}
