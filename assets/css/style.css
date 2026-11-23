@@ -384,6 +384,24 @@ p{ margin:0 0 1em; color:var(--text-2); }
   max-width:520px;
 }
 
+/* ---------- Selo do GRAACC no hero (logo é colorido: precisa de fundo branco) ---------- */
+.graacc{
+  display:flex; align-items:center; gap:16px; flex-wrap:wrap;
+  max-width:520px; padding:12px 18px;
+  background:#fff; border-radius:var(--r);
+  color:#22408F; font-size:.95rem; line-height:1.45; text-decoration:none;
+}
+.graacc img{ width:150px; height:auto; flex:none; }
+/* Telemedicina e televeterinária sempre lado a lado, também no celular */
+.hero__cta{ flex-wrap:nowrap; }
+.hero__cta .btn{ flex:1 1 0; min-width:0; justify-content:center; text-align:center; }
+@media (max-width:480px){
+  .hero__cta{ gap:10px; }
+  .hero__cta .btn{ padding:14px 8px; font-size:.9rem; white-space:nowrap; }
+}
+.graacc span{ flex:1 1 200px; }
+.graacc:hover b, .graacc:focus-visible b{ text-decoration:underline; }
+
 /* ---------- Grade de categorias (navegação marketplace) ---------- */
 .cat-grid{
   display:grid; gap:16px;

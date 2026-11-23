@@ -40,7 +40,6 @@ const CATEGORIAS = [
   { id: 'renda',     nome: 'Renda Extra',           icone: '💰' },
   { id: 'negocios',  nome: 'Empreendedorismo',      icone: '🚀' },
   { id: 'saude',     nome: 'Saúde & Bem-Estar',     icone: '💚' },
-  { id: 'seguranca', nome: 'Segurança',             icone: '🛡️' },
   { id: 'educacao',  nome: 'Educação & Carreira',   icone: '🎓' },
   { id: 'pessoal',   nome: 'Desenvolvimento Pessoal', icone: '🎯' }
 ];
