@@ -1382,6 +1382,9 @@ tbody tr:hover{ background:rgba(255,255,255,.02); }
   .pillar__ico{ width:34px; height:34px; margin-bottom:6px; font-size:1rem; }
   .pillar h4{ font-size:.74rem; }
   .pillar p{ display:none; }
+  /* Pedido do Gabriel: no celular as categorias apareciam duas vezes
+     (grade do topo e rodapé). Fica só a do topo. */
+  .footer__cats{ display:none; }
   .float-badge{ display:none; }
 }
 

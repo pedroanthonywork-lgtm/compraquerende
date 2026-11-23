@@ -178,9 +178,6 @@
   </div>
 </section>
 
-<!-- ===== Pilares ===== -->
-<section class="pillars" id="pilares"></section>
-
 <!-- ===== Faixa correndo ===== -->
 <div class="marquee" aria-hidden="true" data-cms-sec="marquee.ativo">
   <div class="marquee__track" id="marquee"></div>
@@ -371,7 +368,7 @@
         </ul>
       </div>
 
-      <div>
+      <div class="footer__cats">
         <h4 data-cms="rod.tituloCat">Categorias</h4>
         <ul id="footerCategorias"></ul>
       </div>
@@ -440,14 +437,6 @@ document.getElementById('ano').textContent = new Date().getFullYear();
       </div>
     </div>`;
 })();
-
-/* ---- Pilares ---- */
-document.getElementById('pilares').innerHTML = Site.get('pilares.itens').map((p, i) => `
-  <div class="pillar reveal" data-delay="${i * 80}">
-    <div class="pillar__ico">${esc(p.icone)}</div>
-    <h4>${esc(p.titulo)}</h4>
-    <p>${esc(p.texto)}</p>
-  </div>`).join('');
 
 /* ---- Faixa correndo ---- */
 (function(){
